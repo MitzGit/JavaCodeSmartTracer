@@ -1,10 +1,9 @@
 package com.zmpc.app;
 
-/**
- * Hello world!
- */
+import static com.zmpc.common.Print.println;
+
 public class App {
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        println("Hello World!");
     }
 }
