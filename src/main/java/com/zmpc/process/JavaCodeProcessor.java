@@ -36,9 +36,9 @@ public class JavaCodeProcessor {
         var indexStart = 0;
         var indexEnd = 0;
 
-        var count = 0;
+        var count = 10;
         String mapElemKey;
-        String strTextBefore;
+        String strOrigin;
 
         do {
             indexStart = text.indexOf("\"\"\"", indexStart);
@@ -47,17 +47,17 @@ public class JavaCodeProcessor {
                 if (indexEnd > indexStart) {
                     count++;
 
-                    strTextBefore = text.substring(indexStart, indexEnd + 3);
+                    strOrigin = text.substring(indexStart, indexEnd + 3);
 
-                    mapElemKey = "#STRB" + (10 + count) + "#";
-                    vStringsMap.put(mapElemKey, strTextBefore);
-                    println(">> " + mapElemKey + " = " + strTextBefore);
+                    mapElemKey = "#STRB" + count + "#";
+                    vStringsMap.put(mapElemKey, strOrigin);
+                    println(">> " + mapElemKey + " = " + strOrigin);
 
                     text = text.substring(0, Math.max(0, indexStart))
                             + mapElemKey
                             + text.substring(Math.min(text.length(), indexEnd + 3));
 
-                    indexStart = indexEnd + 3 + (mapElemKey.length() - strTextBefore.length());
+                    indexStart = indexEnd + 3 + (mapElemKey.length() - strOrigin.length());
                 }
             }
         } while (indexStart >= 0 && indexEnd > 0 && count < 1000);
@@ -70,9 +70,9 @@ public class JavaCodeProcessor {
         var indexEnd = 0;
         var resultText = "";
 
-        var count = 0;
+        var count = 100;
         String mapElemKey;
-        String strTextBefore;
+        String strOrigin;
         String line;
 
         String[] lines = text.split("\n");
@@ -95,11 +95,11 @@ public class JavaCodeProcessor {
 
                         count++;
 
-                        strTextBefore = line.substring(indexStart, indexEnd + 1);
+                        strOrigin = line.substring(indexStart, indexEnd + 1);
 
-                        mapElemKey = "#STR" + (100 + count) + '#';
-                        vStringsMap.put(mapElemKey, strTextBefore);
-                        println(">> " + mapElemKey + " = " + strTextBefore);
+                        mapElemKey = "#STR" + count + '#';
+                        vStringsMap.put(mapElemKey, strOrigin);
+                        println(">> " + mapElemKey + " = " + strOrigin);
 
                         line = line.substring(0, Math.max(0, indexStart))
                                 + mapElemKey
