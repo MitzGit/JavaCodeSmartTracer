@@ -118,13 +118,18 @@ public class JavaCodeProcessor {
     }
 
     public static String processStringsComplete(String text) {
-        for (Map.Entry<String, String> mapElem : vStringsMap.entrySet()) {
-            text = text.replace(mapElem.getKey(), mapElem.getValue());
-        }
+        text = completeWithMap(text, vStringsMap);
 
         text = text.replace("##HTTPS##", "https://");
         text = text.replace("##HTTP##", "http://");
 
+        return text;
+    }
+
+    private static String completeWithMap(String text, Map<String, String> map) {
+        for (Map.Entry<String, String> mapElem : map.entrySet()) {
+            text = text.replace(mapElem.getKey(), mapElem.getValue());
+        }
         return text;
     }
 }

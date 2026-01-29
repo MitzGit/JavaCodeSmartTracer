@@ -16,6 +16,7 @@ public class App {
 
         String content = readTextFromFile(originFilePath);
         content = processJavaCodePrepare(content);
+        println("----------------------------------------------");
         println(content);
         FileUtils.writeTextToFile(content, outFilePath + ".process.txt");
         content = processJavaCodeComplete(content);
