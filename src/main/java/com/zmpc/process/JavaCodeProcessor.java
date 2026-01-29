@@ -82,30 +82,30 @@ public class JavaCodeProcessor {
             line = lines[i];
 
             do {
-
                 indexStart = line.indexOf('"');
-                if (indexStart >= 0) {
-                    indexEnd = line.indexOf('"', indexStart + 1);
-                    if (indexEnd > indexStart) {
-                        commentIndex = line.indexOf("//");
-                        if (commentIndex >= 0 && commentIndex < indexStart) {
-                            // don't process strings after comment: //
-                            break;
-                        }
+                if (indexStart < 0) continue;
 
-                        count++;
+                indexEnd = line.indexOf('"', indexStart + 1);
+                if (indexEnd <= indexStart) continue;
 
-                        strOrigin = line.substring(indexStart, indexEnd + 1);
-
-                        mapElemKey = "#STR" + count + '#';
-                        vStringsMap.put(mapElemKey, strOrigin);
-                        println(">> " + mapElemKey + " = " + strOrigin);
-
-                        line = line.substring(0, indexStart)
-                                + mapElemKey
-                                + line.substring(indexEnd + 1);
-                    }
+                commentIndex = line.indexOf("//");
+                if (commentIndex >= 0 && commentIndex < indexStart) {
+                    // don't process strings after comment: //
+                    break;
                 }
+
+                count++;
+
+                strOrigin = line.substring(indexStart, indexEnd + 1);
+
+                mapElemKey = "#STR" + count + '#';
+                vStringsMap.put(mapElemKey, strOrigin);
+                println(">> " + mapElemKey + " = " + strOrigin);
+
+                line = line.substring(0, indexStart)
+                        + mapElemKey
+                        + line.substring(indexEnd + 1);
+
             } while (indexStart >= 0 && indexEnd > 0 && count < 100000);
 
             if (i > 0) {
