@@ -7,7 +7,7 @@ import static com.zmpc.common.Print.println;
 
 public class JavaCodeProcessor {
 
-    private static Map<String, String> vStringsMap = new HashMap<>();
+    private final static Map<String, String> vStringsMap = new HashMap<>();
 
     public static String processJavaCodePrepare(String text) {
         text = processStringsPrepare(text);
@@ -53,7 +53,7 @@ public class JavaCodeProcessor {
                     vStringsMap.put(mapElemKey, strOrigin);
                     println(">> " + mapElemKey + " = " + strOrigin);
 
-                    text = text.substring(0, Math.max(0, indexStart))
+                    text = text.substring(0, indexStart)
                             + mapElemKey
                             + text.substring(Math.min(text.length(), indexEnd + 3));
 
@@ -101,7 +101,7 @@ public class JavaCodeProcessor {
                         vStringsMap.put(mapElemKey, strOrigin);
                         println(">> " + mapElemKey + " = " + strOrigin);
 
-                        line = line.substring(0, Math.max(0, indexStart))
+                        line = line.substring(0, indexStart)
                                 + mapElemKey
                                 + line.substring(Math.min(line.length(), indexEnd + 1));
                     }
