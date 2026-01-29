@@ -55,12 +55,12 @@ public class JavaCodeProcessor {
 
                     text = text.substring(0, indexStart)
                             + mapElemKey
-                            + text.substring(Math.min(text.length(), indexEnd + 3));
+                            + text.substring(indexEnd + 3);
 
                     indexStart = indexEnd + 3 + (mapElemKey.length() - strOrigin.length());
                 }
             }
-        } while (indexStart >= 0 && indexEnd > 0 && count < 1000);
+        } while (indexStart >= 0 && indexEnd > 0 && count < 10000);
 
         return text;
     }
@@ -103,10 +103,10 @@ public class JavaCodeProcessor {
 
                         line = line.substring(0, indexStart)
                                 + mapElemKey
-                                + line.substring(Math.min(line.length(), indexEnd + 1));
+                                + line.substring(indexEnd + 1);
                     }
                 }
-            } while (indexStart >= 0 && indexEnd > 0 && count < 10000);
+            } while (indexStart >= 0 && indexEnd > 0 && count < 100000);
 
             if (i > 0) {
                 resultText += '\n';
