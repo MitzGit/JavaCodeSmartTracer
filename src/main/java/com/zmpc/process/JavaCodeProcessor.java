@@ -23,16 +23,23 @@ public class JavaCodeProcessor {
         text = text.replace("https://", "##HTTPS##");
         text = text.replace("http://", "##HTTP##");
 
+        // process """str""" - block strings
+        text = processBlockStrings(text);
+
+        // process "str" - common strings
+        text = processLineStrings(text);
+
+        return text;
+    }
+
+    private static String processBlockStrings(String text) {
         var indexStart = 0;
         var indexEnd = 0;
-        var resultText = "";
 
         var count = 0;
         String mapElemKey;
         String strTextBefore;
-        String line;
 
-        // process """str""" - block strings
         do {
             indexStart = text.indexOf("\"\"\"", indexStart);
             if (indexStart >= 0) {
@@ -42,7 +49,7 @@ public class JavaCodeProcessor {
 
                     strTextBefore = text.substring(indexStart, indexEnd + 3);
 
-                    mapElemKey = "#STR" + (100 + count) + "#";
+                    mapElemKey = "#STRB" + (10 + count) + "#";
                     vStringsMap.put(mapElemKey, strTextBefore);
                     println(">> " + mapElemKey + " = " + strTextBefore);
 
@@ -55,6 +62,18 @@ public class JavaCodeProcessor {
             }
         } while (indexStart >= 0 && indexEnd > 0 && count < 1000);
 
+        return text;
+    }
+
+    private static String processLineStrings(String text) {
+        var indexStart = 0;
+        var indexEnd = 0;
+        var resultText = "";
+
+        var count = 0;
+        String mapElemKey;
+        String strTextBefore;
+        String line;
 
         String[] lines = text.split("\n");
         int commentIndex;
