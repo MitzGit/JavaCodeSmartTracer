@@ -1,13 +1,111 @@
 package com.zmpc.process;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.zmpc.common.Print.println;
+
 public class JavaCodeProcessor {
 
-    public static String processJavaText(String text) {
+    private static Map<String, String> vStringsMap = new HashMap<>();
+
+    public static String processJavaCodePrepare(String text) {
         text = processStringsPrepare(text);
         return text;
     }
 
+    public static String processJavaCodeComplete(String text) {
+        text = processStringsComplete(text);
+        return text;
+    }
+
     public static String processStringsPrepare(String text) {
+        text = text.replace("https://", "##HTTPS##");
+        text = text.replace("http://", "##HTTP##");
+
+        var indexStart = 0;
+        var indexEnd = 0;
+        var resultText = "";
+
+        var count = 0;
+        String mapElemKey;
+        String strTextBefore;
+        String line;
+
+        // process """str""" - block strings
+        do {
+            indexStart = text.indexOf("\"\"\"", indexStart);
+            if (indexStart >= 0) {
+                indexEnd = text.indexOf("\"\"\"", indexStart + 3);
+                if (indexEnd > indexStart) {
+                    count++;
+
+                    strTextBefore = text.substring(indexStart, indexEnd + 3);
+
+                    mapElemKey = "#STR" + (100 + count) + "#";
+                    vStringsMap.put(mapElemKey, strTextBefore);
+                    println(">> " + mapElemKey + " = " + strTextBefore);
+
+                    text = text.substring(0, Math.max(0, indexStart))
+                            + mapElemKey
+                            + text.substring(Math.min(text.length(), indexEnd + 3));
+
+                    indexStart = indexEnd + 3 + (mapElemKey.length() - strTextBefore.length());
+                }
+            }
+        } while (indexStart >= 0 && indexEnd > 0 && count < 1000);
+
+
+        String[] lines = text.split("\n");
+        int commentIndex;
+        // process "str" - common strings
+        for (var i = 0; i < lines.length; i++) {
+            line = lines[i];
+
+            do {
+
+                indexStart = line.indexOf('"');
+                if (indexStart >= 0) {
+                    indexEnd = line.indexOf('"', indexStart + 1);
+                    if (indexEnd > indexStart) {
+                        commentIndex = line.indexOf("//");
+                        if (commentIndex >= 0 && commentIndex < indexStart) {
+                            // don't process strings after comment: //
+                            break;
+                        }
+
+                        count++;
+
+                        strTextBefore = line.substring(indexStart, indexEnd + 1);
+
+                        mapElemKey = "#STR" + (100 + count) + '#';
+                        vStringsMap.put(mapElemKey, strTextBefore);
+                        println(">> " + mapElemKey + " = " + strTextBefore);
+
+                        line = line.substring(0, Math.max(0, indexStart))
+                                + mapElemKey
+                                + line.substring(Math.min(line.length(), indexEnd + 1));
+                    }
+                }
+            } while (indexStart >= 0 && indexEnd > 0 && count < 10000);
+
+            if (i > 0) {
+                resultText += '\n';
+            }
+            resultText += line;
+        }
+
+        return resultText;
+    }
+
+    public static String processStringsComplete(String text) {
+        for (Map.Entry<String, String> mapElem : vStringsMap.entrySet()) {
+            text = text.replace(mapElem.getKey(), mapElem.getValue());
+        }
+
+        text = text.replace("##HTTPS##", "https://");
+        text = text.replace("##HTTP##", "http://");
+
         return text;
     }
 }
