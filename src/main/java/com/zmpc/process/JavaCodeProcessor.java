@@ -8,14 +8,17 @@ import static com.zmpc.common.Print.println;
 public class JavaCodeProcessor {
 
     private final static Map<String, String> vStringsMap = new HashMap<>();
+    private final static Map<String, String> vLineCommentsMap = new HashMap<>();
 
     public static String processJavaCodePrepare(String text) {
         text = processStringsPrepare(text);
+        text = processLineCommentsPrepare(text);
         return text;
     }
 
     public static String processJavaCodeComplete(String text) {
         text = processStringsComplete(text);
+        text = completeWithMap(text, vLineCommentsMap);
         return text;
     }
 
@@ -130,6 +133,57 @@ public class JavaCodeProcessor {
         for (Map.Entry<String, String> mapElem : map.entrySet()) {
             text = text.replace(mapElem.getKey(), mapElem.getValue());
         }
+        return text;
+    }
+
+    public static String processLineCommentsPrepare(String text) {
+        String[] lines = text.split("\n");
+        int index;
+        String resultText = "";
+
+        int count = 100;
+        String mapElemKey;
+        String strComment, strTextAfter;
+        boolean isFullLineComment;
+
+        for (var i = 0; i < lines.length; i++) {
+            isFullLineComment = false;
+
+            index = lines[i].indexOf("//");
+            if (index >= 0) {
+                count++;
+
+                isFullLineComment = lines[i].substring(0, index).isBlank();
+
+                strComment = lines[i].substring(index);
+                if (isFullLineComment) {
+                    strTextAfter = "\n"
+                            + lines[i];
+                } else {
+                    strTextAfter = strComment;
+                }
+
+                mapElemKey = "#CMTL" + count + '#';
+                vLineCommentsMap.put(mapElemKey, strTextAfter);
+                println(">> " + mapElemKey + " = " + strTextAfter);
+
+                if (isFullLineComment) {
+                    lines[i] = mapElemKey;
+                } else {
+                    lines[i] = lines[i].substring(0, index) + mapElemKey;
+                }
+            }
+
+            if (i > 0 && !isFullLineComment) {
+                resultText += '\n';
+            }
+            resultText += lines[i];
+        }
+
+        return resultText;
+    }
+
+    public static String processLineCommentsComplete(String text) {
         return text;
     }
 }
